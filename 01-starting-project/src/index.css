@@ -106,7 +106,7 @@ header h1 {
 }
 
 #question progress::-webkit-progress-bar {
-  background: #6a558a;
+  background: #ffffff;
   border-radius: 24px;
 }
 
@@ -180,13 +180,13 @@ header h1 {
 
 .answer button.correct {
   /* background: linear-gradient(180deg, #a1fa61 0%, #52d482 100%); */
-  background: #5af59d;
+  background: #22f82c;
   color: #2c203d;
 }
 
 .answer button.wrong {
   /* background: linear-gradient(180deg, #f96fb1 0%, #f52b8c 100%); */
-  background: #f55a98;
+  background: #f72828;
   color: #2c203d;
 }
 

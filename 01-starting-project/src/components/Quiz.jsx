@@ -1,49 +1,66 @@
-import { useState } from "react";
-import QUESTIONS from '../questions.js'
-import tropyimg from '../assets/quiz-complete.png'
+import { useCallback, useState } from "react";
+import QUESTIONS from "../questions.js";
+import tropyimg from "../assets/quiz-complete.png";
+import Questions from "./Questions.jsx";
 
-export default function Quiz(){
+export default function Quiz() {
 
-    const [userAnswers , setUserAnswers] = useState([]);
+  const [userAnswers, setUserAnswers] = useState([]);
 
-    const activeQuestionIndex = userAnswers.length;
+  const [AnswerState, setAnswerState] = useState('');
 
-    const questionNumber = activeQuestionIndex + 1;
+  const activeQuestionIndex = AnswerState === '' ? userAnswers.length : userAnswers.length - 1 ;
 
-    const isQuizCompleted = activeQuestionIndex  === QUESTIONS.length;
+  const questionNumber = activeQuestionIndex + 1;
 
-    //function that sets the slected useranswer
-    function handleSelectedAnswer(SelectedAnswer) {
-        setUserAnswers((prevUserAnswer)=>{
-            return [...prevUserAnswer , SelectedAnswer];
-        });
+  const isQuizCompleted = activeQuestionIndex === QUESTIONS.length;
+
+  //function that sets the slected useranswer
+  const handleSelectedAnswer = useCallback(function handleSelectedAnswer(
+    SelectedAnswer
+  ) {
+    setAnswerState('answered');
+    setUserAnswers((prevUserAnswer) => {
+      return [...prevUserAnswer, SelectedAnswer];
+    });
+ setTimeout(() => {
+    if (SelectedAnswer === QUESTIONS[activeQuestionIndex].answers[0]){
+        setAnswerState('correct');
+    }else {
+        setAnswerState('wrong');
     }
+    setTimeout(() => {
+        setAnswerState('');
+    },2000);
+ },1000);
+  },
+  [activeQuestionIndex]);
 
-    if(isQuizCompleted){
- return(
-    <div id="summary">
-        <img src={tropyimg} alt="tropy"/>
+  const handleSkipUnAnswer = useCallback(
+    () => handleSelectedAnswer(null),
+    [handleSelectedAnswer]
+  );
+
+  if (isQuizCompleted) {
+    return (
+      <div id="summary">
+        <img src={tropyimg} alt="tropy" />
         <h2>Quiz Completed</h2>
-    </div>
- );
-    }
-
-    const shuffledAnswers = [...QUESTIONS[activeQuestionIndex].answers];
-    shuffledAnswers.sort(() => Math.random() -0.5);
-
-    return(
-        <div id="quiz">
-        <div id="question">
-            <h2>Question no : {`${questionNumber}/${QUESTIONS.length}`}</h2>
-            <h2>{QUESTIONS[activeQuestionIndex].text}</h2>
-            <ul id="answers" >
-               {shuffledAnswers.map((answer) =>(
-                <li key={answer} className="answer">
-                    <button onClick={() => handleSelectedAnswer(answer)}>{answer}</button>
-                </li>
-               ))}
-            </ul>
-        </div>
-        </div>
+      </div>
     );
+  }
+
+  return (
+    <div id="quiz">
+      <Questions 
+      key={activeQuestionIndex}
+      questionText={QUESTIONS[activeQuestionIndex].text}
+       answers={QUESTIONS[activeQuestionIndex].answers} 
+      OnSelectAnswer={handleSelectedAnswer}
+      selectedAnswer={userAnswers[userAnswers.length - 1]}
+      AnswerState={AnswerState}
+      OnSkipUnAnswer={handleSkipUnAnswer}
+      questionNumber={questionNumber}/>
+    </div>
+  );
 }
